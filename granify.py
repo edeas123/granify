@@ -48,7 +48,7 @@ data = data.cache()
 # prepare the report grouped by start_hour, site_id, gr, ad, and browser
 # sessions, evenues, transactions and conversions
 
-report_1 = data.limit(1000).groupby(["start_hour", "site_id", "gr", "ad", "browser"]) \
+report_1 = data.groupby(["start_hour", "site_id", "gr", "ad", "browser"]) \
         .agg(f.countDistinct(data.ssid).alias("#sessions"), # unique session id
         f.countDistinct(f.when(f.isnull(data.revenue), None).otherwise(data.ssid)).alias("#conversion"),  # unique session id where revenue is not null
         f.sum(f.when(f.isnull(data.revenue), 0).otherwise(1)).alias("#transactions"),  # count where revenue is not null
@@ -63,7 +63,7 @@ report_1.toPandas().to_csv("granify.tsv", sep=",", header=True, index=False)
 
 # a list of means and standard deviations for each feature per every (site_id, ad) pair
 # prepare the report of feature means and standard deviations grouped by site_id, ad
-report_2 = data.limit(1000).groupby(["site_id", "ad"]) \
+report_2 = data.groupby(["site_id", "ad"]) \
             .agg(f.mean(data['feature-1']).alias("f1_mean"),
                 f.mean(data['feature-2']).alias("f2_mean"),
                 f.mean(data['feature-3']).alias("f_mean"),
